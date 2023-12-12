@@ -1,4 +1,4 @@
-# :umbrella: Sunshine Weather API :umbrella:
+# :partly_sunny: Sunshine Weather API :partly_sunny:
 
 |:book: Table of contents|
 |-|
