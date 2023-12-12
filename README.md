@@ -1,4 +1,4 @@
-# :partly_sunny: Sunshine Weather API :partly_sunny:
+# Sunshine Weather API 
 
 |:book: Table of contents|
 |-|
