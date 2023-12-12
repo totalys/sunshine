@@ -1,0 +1,59 @@
+definitions:
+  httputil.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/health:
+    get:
+      consumes:
+      - application/json
+      description: Gets the application status. sunshine means it is working.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: sunshine
+          schema:
+            type: string
+      summary: Gets the application status
+      tags:
+      - health
+  /api/temperature:
+    get:
+      consumes:
+      - application/json
+      description: Gets the application status. sunshine means it is working.
+      parameters:
+      - description: Sao Paulo
+        in: query
+        name: city
+        required: true
+        type: string
+      - description: Brazil
+        in: query
+        name: country
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: sunshine
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Gets the temperature in Kelvin, Celsius and Fahrenheit for a given
+        city
+      tags:
+      - temperature
+swagger: "2.0"

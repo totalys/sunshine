@@ -1,0 +1,26 @@
+{
+    "Log" : {
+        "Level": "debug"
+    },
+    "Server": {
+        "Port" : 8080,
+        "Swagger": {
+            "Enabled": true,
+            "Path": "/swagger/*"
+        },
+        "GeoLocation": {
+            "Internal": false,
+            "Path" : "configs/local_city_source.json"
+        }
+    },
+    "External": {
+       "GeoLocation": {
+        "Host": "https://api.openweathermap.org",
+        "ApiKey": ""
+       },
+       "Weather": {
+        "Host": "https://api.openweathermap.org",
+        "ApiKey": ""
+       } 
+    }
+}

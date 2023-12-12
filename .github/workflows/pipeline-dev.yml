@@ -1,0 +1,84 @@
+name: workflow build and test
+
+on:
+    pull_request:
+        branches:
+            - main 
+        types:
+            - opened
+            - reopened
+    workflow_dispatch:
+
+jobs:
+    tests:
+        name: tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+     
+            - uses: actions/setup-go@v4
+              with:
+                go-version: '>=1.21.1'      
+
+            - name: display go version
+              run: go version
+
+            - name: build
+              run: go build ./...
+
+            - name: unit test coverage
+              run: go test ./... -coverprofile=./cover.out
+
+            - name: check test coverage
+              uses: vladopajic/go-test-coverage@v2
+              with:
+                config: ./.testcoverage.yml
+            
+    tagging:
+        needs: tests
+        name: tagging
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        outputs:
+            new_tag: ${{ steps.tag_version.outputs.new_tag }}
+            tag: ${{ steps.tag_version.outputs.tag }}
+        
+        steps:
+            - name: checkout
+              uses: actions/checkout@v3
+              with:
+                fetch-depth: '0'
+            
+            - name: bump version and push tag
+              id: tag_version
+              uses: anothrNick/github-tag-action@1.61.0
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                WITH_V: true
+                RELEASE_BRANCHES: dev
+                DEFAULT_BUMP: patch
+                PRERELEASE: true
+    
+    build:
+        needs: tagging
+        name: build
+        runs-on: ubuntu-latest
+        env:
+            image_name: ${{ github.repository }}
+            commit_id: ${{ github.sha }}
+            version: ${{ needs.tagging.outputs.new_tag }}
+        steps:
+            - uses: actions/checkout@v3
+     
+            - uses: actions/setup-go@v4
+              with:
+                go-version: '>=1.21.1'
+
+            - name: display go version
+              run: go version
+
+            - name: build image
+              run: docker build --no-cache --build-arg CI_VERSION=$version --build-arg CI_COMMIT_SHA=$commit_id -t totalys/go/sunshine:latest -t totalys/go/sunshine:$version .
+
+            - name: to be continued...
+              run: echo image has been created and it is ready to be pushed.
